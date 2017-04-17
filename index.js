@@ -20,8 +20,12 @@ module.exports.convertString = function (code) {
                     var properties = [];
                     if (directiveReturnStatement) {
                         var directiveProperties = directiveReturnStatement.argument.properties;
-                        // path.value.arguments[1] = b.objectExpression(directiveProperties || []);
-                        properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
+                        var scopeExists = directiveProperties.filter(function (prop) {
+                                return prop.key.name === "scope";
+                            }).length > 0;
+                        if (scopeExists) {
+                            properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
+                        }
                     }
                     path.value.arguments[1] = b.objectExpression(properties);
                 }

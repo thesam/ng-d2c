@@ -7,7 +7,7 @@ describe("ng-d2c", function () {
     });
 
     it("should convert empty directive", function () {
-        assert.equal(d2c.convertString('angular.module("foo").directive("bar",function () {})'), 'angular.module("foo").component("bar",{})');
+        assert.equal(d2c.convertString('angular.module("foo").directive("bar",function () { return {}; })'), 'angular.module("foo").component("bar",{})');
     });
 
     it("should convert empty isolate scope to empty bindings", function () {
@@ -18,7 +18,6 @@ describe("ng-d2c", function () {
             '});'), 'angular.module("foo").component("bar",{\n  bindings: {}\n});');
     });
 
-    //TODO: Change directive name
-    //TODO: Convert file (and filename)
+    //TODO: Convert file
     //TODO: Scan files, list candidates
 });
