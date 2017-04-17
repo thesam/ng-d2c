@@ -20,10 +20,11 @@ module.exports.convertString = function (code) {
                     var properties = [];
                     if (directiveReturnStatement) {
                         var directiveProperties = directiveReturnStatement.argument.properties;
-                        var scopeExists = directiveProperties.filter(function (prop) {
-                                return prop.key.name === "scope";
-                            }).length > 0;
-                        if (scopeExists) {
+                        var directivePropertyKeys = {};
+                            directiveProperties.forEach(function (prop) {
+                            directivePropertyKeys[prop.key.name] = "TODO";
+                        });
+                        if (directivePropertyKeys.hasOwnProperty("scope")) {
                             properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
                         }
                     }
