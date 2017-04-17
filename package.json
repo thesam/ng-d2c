@@ -1,0 +1,25 @@
+{
+  "name": "ng-d2c",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thesam/ng-d2c.git"
+  },
+  "author": "Samuel Moritz <samuel.moritz@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/thesam/ng-d2c/issues"
+  },
+  "homepage": "https://github.com/thesam/ng-d2c#readme",
+  "dependencies": {
+    "recast": "^0.10.32"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.2"
+  }
+}
