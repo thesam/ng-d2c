@@ -14,10 +14,16 @@ module.exports.convertString = function (code) {
                     // console.log(directiveName);
                     // console.log(directiveFunctionExpression.body.body);
                     //TODO: Verify that this is a return statement
-                    var directiveReturnStatement = directiveFunctionExpression.body.body[directiveFunctionExpression.body.body.length -1];
-                    console.log(directiveReturnStatement.argument);
+                    var directiveReturnStatement = directiveFunctionExpression.body.body[directiveFunctionExpression.body.body.length - 1];
+                    //console.log(directiveReturnStatement.argument);
                     path.value.callee.property.name = "component";
-                    path.value.arguments[1] = directiveReturnStatement.argument || b.objectExpression([]);
+                    var properties = [];
+                    if (directiveReturnStatement) {
+                        var directiveProperties = directiveReturnStatement.argument.properties;
+                        // path.value.arguments[1] = b.objectExpression(directiveProperties || []);
+                        properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
+                    }
+                    path.value.arguments[1] = b.objectExpression(properties);
                 }
                 this.traverse(path);
             }

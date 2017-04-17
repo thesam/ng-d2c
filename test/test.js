@@ -15,7 +15,7 @@ describe("ng-d2c", function () {
             'return {' +
             'scope: {}' +
             '};' +
-            '})'), 'angular.module("foo").component("bar",{bindings: {})');
+            '});'), 'angular.module("foo").component("bar",{\n  bindings: {}\n});');
     });
 
     //TODO: Change directive name
