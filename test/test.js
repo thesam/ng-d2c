@@ -18,18 +18,7 @@ describe("ng-d2c", function () {
             '});').code, 'angular.module("foo").component("bar",{\n  bindings: {}\n});');
     });
 
-    function testUnsupportedProperty(propertyName) {
-        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
-            'return {' +
-            propertyName + ': {}' +
-            '};' +
-            '});');
-        assert.equal(result.code, undefined);
-        assert.equal(result.errors.length, 1);
-        assert.equal(result.errors[0], "Property cannot be converted safely: " + propertyName);
-    }
-
-    it("should return error for directive with unsupported property", () => {
+   it("should return error for directive with unsupported property", () => {
         testUnsupportedProperty("compile");
         testUnsupportedProperty("link");
         testUnsupportedProperty("multiElement");
@@ -49,19 +38,41 @@ describe("ng-d2c", function () {
         assert.equal(result.errors[0], "Directive does not return an object");
     });
 
-    it("TODO: should copy supported properties to component object", () => {
-        // let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
-        //     'return {' +
-        //     'compile: {}' +
-        //     '};' +
-        //     '});');
-        // assert.equal(result.code, undefined);
-        // assert.equal(result.errors.length, 1);
-        // assert.equal(result.errors[0], "Property cannot be converted safely: compile");
+    it("should copy supported properties to component object", () => {
+        testSupportedProperty("controller");
+        testSupportedProperty("controllerAs");
+        testSupportedProperty("require");
+        testSupportedProperty("template");
+        testSupportedProperty("templateUrl");
+        testSupportedProperty("transclude");
     });
+
+    function testUnsupportedProperty(propertyName) {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return {' +
+            propertyName + ': "TEST"' +
+            '};' +
+            '});');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Property cannot be converted safely: " + propertyName);
+    }
+
+    function testSupportedProperty(propertyName) {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return {' +
+            propertyName + ': "TEST"' +
+            '};' +
+            '});');
+        assert.equal(result.code, 'angular.module("foo").component("bar",{\n  ' + propertyName + ': "TEST"\n});');
+        assert.equal(result.errors.length, 0);
+    }
+
 
     //TODO: Convert file
     //TODO: restrict == E
     //TODO: Scan files, list directives that can be converted and those with errors
     //TODO: Different combos of scope/bindToController (separate errors for: non-isolate scope, non-bindToController)
+    //TODO: Error if multiple directives in same file
+    //TODO: Non-empty scope
 });

@@ -32,18 +32,22 @@ module.exports.convertString = function (code) {
                             directiveProperties = [];
                         }
                         var directivePropertyKeys = {};
-                        var whitelist = ["scope"];
+                        var whitelist = ["scope","controller"];
                         directiveProperties.forEach(function (prop) {
                             if (whitelist.indexOf(prop.key.name) !== -1) {
-                                directivePropertyKeys[prop.key.name] = "TODO";
+                                directivePropertyKeys[prop.key.name] = prop.value;
                             } else {
                                 errors.push("Property cannot be converted safely: " + prop.key.name);
                             }
                         });
                         if (errors.length === 0) {
                             path.value.callee.property.name = "component";
-                            if (directivePropertyKeys.hasOwnProperty("scope")) {
-                                properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
+                            for (var key in directivePropertyKeys) {
+                                if (key ==="scope") {
+                                    properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
+                                } else {
+                                    properties.push(b.property("init", b.identifier(key), directivePropertyKeys[key]));
+                                }
                             }
                         }
                         path.value.arguments[1] = b.objectExpression(properties);
