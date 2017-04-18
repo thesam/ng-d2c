@@ -1,5 +1,14 @@
+#!/usr/bin/env node
 var recast = require("recast");
 var b = recast.types.builders;
+
+console.log("ng-d2c");
+
+var args = process.argv.slice(2);
+
+args.forEach(function (val) {
+    console.log(': ' + val);
+});
 
 module.exports.convertString = function (code) {
 

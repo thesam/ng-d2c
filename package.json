@@ -21,5 +21,8 @@
   },
   "devDependencies": {
     "mocha": "^2.3.2"
+  },
+  "bin": {
+    "ng-d2c": "index.js"
   }
 }
