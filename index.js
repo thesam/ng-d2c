@@ -71,7 +71,11 @@ function visitDirective(path) {
         if (errors.length === 0) {
             // This is the point of no return, where we start rewriting the AST!
             path.value.callee.property.name = "component";
-            properties.push(b.property("init", b.identifier("bindings"), bindingsProperties["scope"]));
+            if (bindingsProperties["bindToController"].type === "ObjectExpression") {
+                properties.push(b.property("init", b.identifier("bindings"), bindingsProperties["bindToController"]));
+            } else {
+                properties.push(b.property("init", b.identifier("bindings"), bindingsProperties["scope"]));
+            }
             for (var key in propertiesToCopy) {
                 properties.push(b.property("init", b.identifier(key), propertiesToCopy[key]));
             }
