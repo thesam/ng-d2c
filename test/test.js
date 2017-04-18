@@ -16,7 +16,7 @@ describe("ng-d2c", function () {
         assert.equal(result.errors[0], "Directive does not use bindToController");
     });
 
-    it("should return error for directive without isolate scope", () => {
+    it("should return error for directive without scope", () => {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {bindToController: {}};' +
             '});');
@@ -24,6 +24,16 @@ describe("ng-d2c", function () {
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Directive does not use isolate scope");
     });
+
+    it("should return error for directive without isolate scope", () => {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return {bindToController: {}, scope: false};' +
+            '});');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Directive does not use isolate scope");
+    });
+
 
     it("should convert isolate scope object to bindings if bindToController is true", () => {
         assert.equal(d2c.convertString('angular.module("foo").directive("bar",function () {' +

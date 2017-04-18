@@ -62,7 +62,7 @@ function visitDirective(path) {
                 errors.push("Property cannot be converted safely: " + prop.key.name);
             }
         });
-        if (!bindingsProperties["scope"]) {
+        if (!bindingsProperties["scope"] || bindingsProperties["scope"].type !== "ObjectExpression") {
             errors.push("Directive does not use isolate scope");
         }
         if (!bindingsProperties["bindToController"]) {
