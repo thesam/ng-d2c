@@ -2,14 +2,6 @@
 var recast = require("recast");
 var b = recast.types.builders;
 
-console.log("ng-d2c");
-
-var args = process.argv.slice(2);
-
-args.forEach(function (val) {
-    console.log(': ' + val);
-});
-
 module.exports.analyzeString = function (code) {
     return visitCode(code, false);
 };
@@ -26,9 +18,12 @@ function visitCode(code, shouldConvert) {
 
     recast.visit(ast, {
             visitCallExpression: function (path) {
-                var functionName = path.value.callee.property.name;
-                if (functionName === "directive") {
-                    errors = visitDirective(path, shouldConvert);
+                //TODO: Test for this if-statement
+                if (path.value.callee.property) {
+                    var functionName = path.value.callee.property.name;
+                    if (functionName === "directive") {
+                        errors = visitDirective(path, shouldConvert);
+                    }
                 }
                 this.traverse(path);
             }
@@ -117,8 +112,10 @@ var glob = require("glob")
 module.exports.analyzeFiles = function (globPattern) {
     var foundFiles = glob.sync(globPattern);
     return foundFiles.map(function (file) {
+        //console.log("Analyzing " + file);
         return {file: file, result: analyzeFile(file)};
     });
+    //TODO: filter files that do not contain directives
 };
 
 function analyzeFile(file) {
@@ -142,3 +139,16 @@ function convertFile(file) {
     }
     return converted;
 }
+
+//TODO: Extract to main/CLI file
+console.log("ng-d2c");
+
+var args = process.argv.slice(2);
+
+var analyzedFiles = module.exports.analyzeFiles("**/*.js");
+analyzedFiles.forEach(function (file) {
+    console.log(file.file);
+    file.result.errors.forEach(function (err) {
+        console.log("\t" + err);
+    });
+});
