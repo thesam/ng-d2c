@@ -10,7 +10,15 @@ args.forEach(function (val) {
     console.log(': ' + val);
 });
 
-module.exports.convertString = function (code) {
+module.exports.analyzeString = function(code) {
+    return visitCode(code, false);
+};
+
+module.exports.convertString = function(code) {
+    return visitCode(code, true);
+};
+
+function visitCode(code, shouldConvert) {
 
     var ast = recast.parse(code);
 
@@ -20,7 +28,7 @@ module.exports.convertString = function (code) {
             visitCallExpression: function (path) {
                 var functionName = path.value.callee.property.name;
                 if (functionName === "directive") {
-                    errors = visitDirective(path);
+                    errors = visitDirective(path, shouldConvert);
                 }
                 this.traverse(path);
             }
@@ -28,16 +36,16 @@ module.exports.convertString = function (code) {
     );
 
     var output = undefined;
-    if (errors.length === 0) {
+    if (errors.length === 0 || !shouldConvert) {
         output = recast.print(ast).code;
     }
     return {
         code: output,
         errors: errors
     };
-};
+}
 
-function visitDirective(path) {
+function visitDirective(path, shouldConvert) {
     var errors = [];
     var directiveName = path.value.arguments[0];
     var directiveReturnStatement = null;
@@ -85,7 +93,7 @@ function visitDirective(path) {
         if (!bindingsProperties["bindToController"]) {
             errors.push("Directive does not use bindToController");
         }
-        if (errors.length === 0) {
+        if (errors.length === 0 && shouldConvert) {
             // This is the point of no return, where we start rewriting the AST!
             path.value.callee.property.name = "component";
             if (bindingsProperties["bindToController"].type === "ObjectExpression") {
@@ -98,6 +106,6 @@ function visitDirective(path) {
             }
             path.value.arguments[1] = b.objectExpression(properties);
         }
-        return errors;
     }
+    return errors;
 }

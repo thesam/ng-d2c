@@ -132,9 +132,15 @@ describe("ng-d2c", function () {
         assert.equal(result.errors[0], "Directive is not restricted to element (E)");
     });
 
+    it("can analyze without converting", () => {
+        var code = 'angular.module("a").directive("b", function() { return ""; })';
+        var result = d2c.analyzeString(code);
+        assert.equal(result.code, code);
+        assert.equal(result.errors.length, 1);
+    });
 
     //TODO: Convert file
-    //TODO: restrict == E
     //TODO: Scan files, list directives that can be converted and those with errors
     //TODO: Error if multiple directives in same file
+    //TODO: directive function without return
 });
