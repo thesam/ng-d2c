@@ -9,7 +9,7 @@ describe("ng-d2c", function () {
 
     it("should return error for directive without bindToController", () => {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
-            'return {scope: {}};' +
+            'return {restrict: "E", scope: {}};' +
             '});');
         assert.equal(result.code, undefined);
         assert.equal(result.errors.length, 1);
@@ -18,7 +18,7 @@ describe("ng-d2c", function () {
 
     it("should return error for directive without scope", () => {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
-            'return {bindToController: {}};' +
+            'return {restrict: "E", bindToController: {}};' +
             '});');
         assert.equal(result.code, undefined);
         assert.equal(result.errors.length, 1);
@@ -27,7 +27,7 @@ describe("ng-d2c", function () {
 
     it("should return error for directive without isolate scope", () => {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
-            'return {bindToController: {}, scope: false};' +
+            'return {restrict: "E", bindToController: {}, scope: false};' +
             '});');
         assert.equal(result.code, undefined);
         assert.equal(result.errors.length, 1);
@@ -38,6 +38,7 @@ describe("ng-d2c", function () {
     it("should convert isolate scope object to bindings if bindToController is true", () => {
         assert.equal(d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {' +
+            'restrict: "E",' +
             'scope: { hello: "="},' +
             'bindToController: true' +
             '};' +
@@ -47,6 +48,7 @@ describe("ng-d2c", function () {
     it("should convert bindToController object to bindings if bindToController is object", () => {
         assert.equal(d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {' +
+            'restrict: "E",' +
             'scope: { hello: "="},' +
             'bindToController: { goodbye: "="}' +
             '};' +
@@ -86,8 +88,9 @@ describe("ng-d2c", function () {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {' +
             propertyName + ': "TEST",' +
-                'scope: {},' +
-                'bindToController: true' +
+            'scope: {},' +
+            'bindToController: true,' +
+            'restrict: "E",' +
             '};' +
             '});');
         assert.equal(result.code, undefined);
@@ -100,7 +103,8 @@ describe("ng-d2c", function () {
             'return {' +
             propertyName + ': "TEST",' +
             'scope: {},' +
-            'bindToController: true' +
+            'bindToController: true,' +
+            'restrict: "E",' +
             '};' +
             '});');
         assert.equal(result.code, 'angular.module("foo").component("bar",{' + EOL +
@@ -109,6 +113,24 @@ describe("ng-d2c", function () {
             '});');
         assert.equal(result.errors.length, 0);
     }
+
+    it("should return error for directive without restrict", () => {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return {scope: {}, bindToController: {}};' +
+            '});');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Directive is not restricted to element (E)");
+    });
+
+    it("should return error for non-element directive", () => {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return {restrict: "A", scope: {}, bindToController: {}};' +
+            '});');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Directive is not restricted to element (E)");
+    });
 
 
     //TODO: Convert file

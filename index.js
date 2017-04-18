@@ -53,15 +53,23 @@ function visitDirective(path) {
         var propertiesToCopy = {};
         var bindingsProperties = {};
         var whitelist = ["controller", "controllerAs", "require", "template", "templateUrl", "transclude"];
+        var restrictedToElement = false;
         directiveProperties.forEach(function (prop) {
             if (whitelist.indexOf(prop.key.name) !== -1) {
                 propertiesToCopy[prop.key.name] = prop.value;
-            } else if (["scope","bindToController"].indexOf(prop.key.name) !== -1) {
+            } else if (["scope", "bindToController"].indexOf(prop.key.name) !== -1) {
                 bindingsProperties[prop.key.name] = prop.value;
+            } else if (prop.key.name === "restrict") {
+                if (prop.value && prop.value.value === "E") {
+                    restrictedToElement= true;
+                }
             } else {
                 errors.push("Property cannot be converted safely: " + prop.key.name);
             }
         });
+        if (!restrictedToElement) {
+            errors.push("Directive is not restricted to element (E)");
+        }
         if (!bindingsProperties["scope"] || bindingsProperties["scope"].type !== "ObjectExpression") {
             errors.push("Directive does not use isolate scope");
         }
