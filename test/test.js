@@ -7,19 +7,34 @@ describe("ng-d2c", function () {
         assert.equal(d2c.convertString('angular.module("foo").component("bar",{})').code, 'angular.module("foo").component("bar",{})');
     });
 
-    it("should convert empty directive", () => {
-        assert.equal(d2c.convertString('angular.module("foo").directive("bar",function () { return {}; })').code, 'angular.module("foo").component("bar",{})');
-    });
-
-    it("should convert empty isolate scope to empty bindings", () => {
+    it("should convert isolate scope object to bindings", () => {
         assert.equal(d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {' +
-            'scope: {}' +
+            'scope: { hello: "="},' +
+            'bindToController: true' +
             '};' +
-            '});').code, 'angular.module("foo").component("bar",{'+EOL+'  bindings: {}'+EOL+'});');
+            '});').code, 'angular.module("foo").component("bar",{' + EOL + '  bindings: { hello: "="}' + EOL + '});');
     });
 
-   it("should return error for directive with unsupported property", () => {
+    it("should return error for directive without bindToController", () => {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return {scope: {}};' +
+            '});');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Directive does not use bindToController");
+    });
+
+    it("should return error for directive without isolate scope", () => {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return {bindToController: {}};' +
+            '});');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Directive does not use isolate scope");
+    });
+
+    it("should return error for directive with unsupported property", () => {
         testUnsupportedProperty("compile");
         testUnsupportedProperty("link");
         testUnsupportedProperty("multiElement");
@@ -51,7 +66,9 @@ describe("ng-d2c", function () {
     function testUnsupportedProperty(propertyName) {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {' +
-            propertyName + ': "TEST"' +
+            propertyName + ': "TEST",' +
+                'scope: {},' +
+                'bindToController: true' +
             '};' +
             '});');
         assert.equal(result.code, undefined);
@@ -62,10 +79,15 @@ describe("ng-d2c", function () {
     function testSupportedProperty(propertyName) {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {' +
-            propertyName + ': "TEST"' +
+            propertyName + ': "TEST",' +
+            'scope: {},' +
+            'bindToController: true' +
             '};' +
             '});');
-        assert.equal(result.code, 'angular.module("foo").component("bar",{'+EOL+'  ' + propertyName + ': "TEST"'+EOL+'});');
+        assert.equal(result.code, 'angular.module("foo").component("bar",{' + EOL +
+            '  ' + 'bindings' + ': {},' + EOL +
+            '  ' + propertyName + ': "TEST"' + EOL +
+            '});');
         assert.equal(result.errors.length, 0);
     }
 
@@ -73,7 +95,8 @@ describe("ng-d2c", function () {
     //TODO: Convert file
     //TODO: restrict == E
     //TODO: Scan files, list directives that can be converted and those with errors
+    //TODO: if bindToController=true, use scope object
+    //TODO: if bindToController is obj and scope is obj, use bindToController
     //TODO: Different combos of scope/bindToController (separate errors for: non-isolate scope, non-bindToController)
     //TODO: Error if multiple directives in same file
-    //TODO: Non-empty scope
 });

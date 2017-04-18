@@ -48,29 +48,35 @@ function visitDirective(path) {
             directiveProperties = returnObj.properties;
         } else {
             errors.push("Directive does not return an object");
-            //TODO
-            directiveProperties = [];
+            return errors;
         }
-        var directivePropertyKeys = {};
-        var whitelist = ["scope", "controller", "controllerAs", "require", "template", "templateUrl", "transclude"];
+        var propertiesToCopy = {};
+        var bindingsProperties = {};
+        var whitelist = ["controller", "controllerAs", "require", "template", "templateUrl", "transclude"];
         directiveProperties.forEach(function (prop) {
             if (whitelist.indexOf(prop.key.name) !== -1) {
-                directivePropertyKeys[prop.key.name] = prop.value;
+                propertiesToCopy[prop.key.name] = prop.value;
+            } else if (["scope","bindToController"].indexOf(prop.key.name) !== -1) {
+                bindingsProperties[prop.key.name] = prop.value;
             } else {
                 errors.push("Property cannot be converted safely: " + prop.key.name);
             }
         });
-        if (errors.length === 0) {
-            path.value.callee.property.name = "component";
-            for (var key in directivePropertyKeys) {
-                if (key === "scope") {
-                    properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
-                } else {
-                    properties.push(b.property("init", b.identifier(key), directivePropertyKeys[key]));
-                }
-            }
+        if (!bindingsProperties["scope"]) {
+            errors.push("Directive does not use isolate scope");
         }
-        path.value.arguments[1] = b.objectExpression(properties);
+        if (!bindingsProperties["bindToController"]) {
+            errors.push("Directive does not use bindToController");
+        }
+        if (errors.length === 0) {
+            // This is the point of no return, where we start rewriting the AST!
+            path.value.callee.property.name = "component";
+            properties.push(b.property("init", b.identifier("bindings"), bindingsProperties["scope"]));
+            for (var key in propertiesToCopy) {
+                properties.push(b.property("init", b.identifier(key), propertiesToCopy[key]));
+            }
+            path.value.arguments[1] = b.objectExpression(properties);
+        }
         return errors;
     }
 }
