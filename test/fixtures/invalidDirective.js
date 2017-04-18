@@ -1,0 +1,1 @@
+angular.module("foo").directive("invalid",function() { return ""; });

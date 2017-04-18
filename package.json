@@ -20,7 +20,8 @@
     "recast": "^0.10.32"
   },
   "devDependencies": {
-    "mocha": "^2.3.2"
+    "mocha": "^2.3.2",
+    "tmp": "0.0.31"
   },
   "bin": {
     "ng-d2c": "index.js"

@@ -139,13 +139,30 @@ describe("ng-d2c", function () {
         assert.equal(result.errors.length, 1);
     });
 
-    it("can find directive in file", () => {
-        var directiveFiles = d2c.scanFiles("test/fixtures/simple*.js");
+    it("can analyze directive in file", () => {
+        var directiveFiles = d2c.analyzeFiles("test/fixtures/invalid*.js");
         assert.equal(directiveFiles.length, 1);
         var directiveFile = directiveFiles[0];
-        //TODO
+        //TODO: directive name
         // assert.equal(directiveFile.name, "simple");
-        assert.equal(directiveFile.errors, []);
+        assert.equal(directiveFile.file, "test/fixtures/invalidDirective.js");
+        assert.equal(directiveFile.result.errors.length, 1);
+        assert.equal(directiveFile.result.errors[0], "Directive does not return an object");
+    });
+
+    it("can convert directive in file", () => {
+        var fs = require("fs");
+        var content = fs.readFileSync("test/fixtures/simpleDirective.js", "utf8");
+        var tmp = require('tmp');
+        var tmpobj = tmp.fileSync();
+        fs.writeFileSync(tmpobj.name, content);
+        var directiveFiles = d2c.convertFiles([tmpobj.name]);
+        var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
+        var expectedComponentContent = fs.readFileSync("test/fixtures/simpleComponent.js", "utf8");
+        assert.equal(directiveFiles.length, 1);
+        assert.equal(directiveFiles[0].result.errors.length, 0);
+        assert.equal(newComponentContent, expectedComponentContent);
+
     });
 
     //TODO: Convert file

@@ -47,7 +47,7 @@ function visitCode(code, shouldConvert) {
 
 function visitDirective(path, shouldConvert) {
     var errors = [];
-    var directiveName = path.value.arguments[0];
+    var directiveName = path.value.arguments[0].value;
     var directiveReturnStatement = null;
     var directiveFunctionExpression = path.value.arguments[1];
     if (directiveFunctionExpression &&
@@ -95,6 +95,7 @@ function visitDirective(path, shouldConvert) {
         }
         if (errors.length === 0 && shouldConvert) {
             // This is the point of no return, where we start rewriting the AST!
+            console.log("Converting: " + directiveName);
             path.value.callee.property.name = "component";
             if (bindingsProperties["bindToController"].type === "ObjectExpression") {
                 properties.push(b.property("init", b.identifier("bindings"), bindingsProperties["bindToController"]));
@@ -113,16 +114,31 @@ function visitDirective(path, shouldConvert) {
 var glob = require("glob")
 
 
-module.exports.scanFiles = function (globPattern) {
+module.exports.analyzeFiles = function (globPattern) {
     var foundFiles = glob.sync(globPattern);
     return foundFiles.map(function (file) {
-        return scanFile(file);
+        return {file: file, result: analyzeFile(file)};
     });
 };
 
-function scanFile(file) {
+function analyzeFile(file) {
     var fs = require("fs");
     var content = fs.readFileSync(file, "utf8");
-    console.log(content);
     return module.exports.analyzeString(content);
+}
+
+module.exports.convertFiles = function (files) {
+    return files.map(function (file) {
+        return {file: file, result: convertFile(file)};
+    });
+};
+
+function convertFile(file) {
+    var fs = require("fs");
+    var content = fs.readFileSync(file, "utf8");
+    var converted = module.exports.convertString(content);
+    if (converted.errors.length === 0) {
+        fs.writeFileSync(file, converted.code);
+    }
+    return converted;
 }
