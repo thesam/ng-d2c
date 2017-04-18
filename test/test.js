@@ -1,5 +1,6 @@
 var d2c = require("../index.js");
 var assert = require("assert");
+var EOL = require('os').EOL;
 
 describe("ng-d2c", function () {
     it("should not touch existing component", () => {
@@ -15,7 +16,7 @@ describe("ng-d2c", function () {
             'return {' +
             'scope: {}' +
             '};' +
-            '});').code, 'angular.module("foo").component("bar",{\n  bindings: {}\n});');
+            '});').code, 'angular.module("foo").component("bar",{'+EOL+'  bindings: {}'+EOL+'});');
     });
 
    it("should return error for directive with unsupported property", () => {
@@ -64,7 +65,7 @@ describe("ng-d2c", function () {
             propertyName + ': "TEST"' +
             '};' +
             '});');
-        assert.equal(result.code, 'angular.module("foo").component("bar",{\n  ' + propertyName + ': "TEST"\n});');
+        assert.equal(result.code, 'angular.module("foo").component("bar",{'+EOL+'  ' + propertyName + ': "TEST"'+EOL+'});');
         assert.equal(result.errors.length, 0);
     }
 

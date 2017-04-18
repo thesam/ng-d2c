@@ -32,7 +32,7 @@ module.exports.convertString = function (code) {
                             directiveProperties = [];
                         }
                         var directivePropertyKeys = {};
-                        var whitelist = ["scope","controller"];
+                        var whitelist = ["scope", "controller", "controllerAs", "require", "template", "templateUrl", "transclude"];
                         directiveProperties.forEach(function (prop) {
                             if (whitelist.indexOf(prop.key.name) !== -1) {
                                 directivePropertyKeys[prop.key.name] = prop.value;
@@ -43,7 +43,7 @@ module.exports.convertString = function (code) {
                         if (errors.length === 0) {
                             path.value.callee.property.name = "component";
                             for (var key in directivePropertyKeys) {
-                                if (key ==="scope") {
+                                if (key === "scope") {
                                     properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
                                 } else {
                                     properties.push(b.property("init", b.identifier(key), directivePropertyKeys[key]));
