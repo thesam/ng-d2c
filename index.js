@@ -4,6 +4,8 @@ module.exports.convertString = function (code) {
     var ast = recast.parse(code);
     var b = recast.types.builders;
 
+    var errors = [];
+
     recast.visit(ast, {
             visitCallExpression: function (path) {
                 var functionName = path.value.callee.property.name;
@@ -16,16 +18,23 @@ module.exports.convertString = function (code) {
                     //TODO: Verify that this is a return statement
                     var directiveReturnStatement = directiveFunctionExpression.body.body[directiveFunctionExpression.body.body.length - 1];
                     //console.log(directiveReturnStatement.argument);
-                    path.value.callee.property.name = "component";
                     var properties = [];
                     if (directiveReturnStatement) {
                         var directiveProperties = directiveReturnStatement.argument.properties;
                         var directivePropertyKeys = {};
-                            directiveProperties.forEach(function (prop) {
-                            directivePropertyKeys[prop.key.name] = "TODO";
+                        var whitelist = ["scope"];
+                        directiveProperties.forEach(function (prop) {
+                            if (whitelist.indexOf(prop.key.name) !== -1) {
+                                directivePropertyKeys[prop.key.name] = "TODO";
+                            } else {
+                                errors.push("Property cannot be converted safely: " + prop.key.name);
+                            }
                         });
-                        if (directivePropertyKeys.hasOwnProperty("scope")) {
-                            properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
+                        if (errors.length === 0) {
+                        path.value.callee.property.name = "component";
+                            if (directivePropertyKeys.hasOwnProperty("scope")) {
+                                properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
+                            }
                         }
                     }
                     path.value.arguments[1] = b.objectExpression(properties);
@@ -35,7 +44,12 @@ module.exports.convertString = function (code) {
         }
     );
 
-    // console.log(ast.program.body);
-    var output = recast.print(ast).code;
-    return output;
+    var output = undefined;
+    if (errors.length === 0) {
+        output = recast.print(ast).code;
+    }
+    return {
+        code: output,
+        errors: errors
+    };
 }
