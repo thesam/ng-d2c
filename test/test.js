@@ -18,15 +18,26 @@ describe("ng-d2c", function () {
             '});').code, 'angular.module("foo").component("bar",{\n  bindings: {}\n});');
     });
 
-    it("should return error for directive with unsupported property", () => {
+    function testUnsupportedProperty(propertyName) {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {' +
-            'compile: {}' +
+            propertyName + ': {}' +
             '};' +
             '});');
         assert.equal(result.code, undefined);
         assert.equal(result.errors.length, 1);
-        assert.equal(result.errors[0], "Property cannot be converted safely: compile");
+        assert.equal(result.errors[0], "Property cannot be converted safely: " + propertyName);
+    }
+
+    it("should return error for directive with unsupported property", () => {
+        testUnsupportedProperty("compile");
+        testUnsupportedProperty("link");
+        testUnsupportedProperty("multiElement");
+        testUnsupportedProperty("priority");
+        testUnsupportedProperty("replace");
+        testUnsupportedProperty("templateNamespace");
+        testUnsupportedProperty("terminal");
+        testUnsupportedProperty("randomName");
     });
 
     it("should return error for directive that does not return object", () => {
@@ -52,4 +63,5 @@ describe("ng-d2c", function () {
     //TODO: Convert file
     //TODO: restrict == E
     //TODO: Scan files, list directives that can be converted and those with errors
+    //TODO: Different combos of scope/bindToController (separate errors for: non-isolate scope, non-bindToController)
 });
