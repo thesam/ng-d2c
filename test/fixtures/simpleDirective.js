@@ -1,0 +1,1 @@
+angular.module("foo").directive("simple",function() { return ""; });

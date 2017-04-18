@@ -139,6 +139,15 @@ describe("ng-d2c", function () {
         assert.equal(result.errors.length, 1);
     });
 
+    it("can find directive in file", () => {
+        var directiveFiles = d2c.scanFiles("test/fixtures/simple*.js");
+        assert.equal(directiveFiles.length, 1);
+        var directiveFile = directiveFiles[0];
+        //TODO
+        // assert.equal(directiveFile.name, "simple");
+        assert.equal(directiveFile.errors, []);
+    });
+
     //TODO: Convert file
     //TODO: Scan files, list directives that can be converted and those with errors
     //TODO: Error if multiple directives in same file

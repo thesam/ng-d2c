@@ -10,11 +10,11 @@ args.forEach(function (val) {
     console.log(': ' + val);
 });
 
-module.exports.analyzeString = function(code) {
+module.exports.analyzeString = function (code) {
     return visitCode(code, false);
 };
 
-module.exports.convertString = function(code) {
+module.exports.convertString = function (code) {
     return visitCode(code, true);
 };
 
@@ -78,7 +78,7 @@ function visitDirective(path, shouldConvert) {
                 bindingsProperties[prop.key.name] = prop.value;
             } else if (prop.key.name === "restrict") {
                 if (prop.value && prop.value.value === "E") {
-                    restrictedToElement= true;
+                    restrictedToElement = true;
                 }
             } else {
                 errors.push("Property cannot be converted safely: " + prop.key.name);
@@ -108,4 +108,21 @@ function visitDirective(path, shouldConvert) {
         }
     }
     return errors;
+}
+
+var glob = require("glob")
+
+
+module.exports.scanFiles = function (globPattern) {
+    var foundFiles = glob.sync(globPattern);
+    return foundFiles.map(function (file) {
+        return scanFile(file);
+    });
+};
+
+function scanFile(file) {
+    var fs = require("fs");
+    var content = fs.readFileSync(file, "utf8");
+    console.log(content);
+    return module.exports.analyzeString(content);
 }
