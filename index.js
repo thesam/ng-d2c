@@ -11,16 +11,26 @@ module.exports.convertString = function (code) {
                 var functionName = path.value.callee.property.name;
                 if (functionName === "directive") {
                     var directiveName = path.value.arguments[0];
+                    var directiveReturnStatement = null;
                     var directiveFunctionExpression = path.value.arguments[1];
-                    //TODO: Do a lot of checks to see if this directive is safe to convert
-                    // console.log(directiveName);
-                    // console.log(directiveFunctionExpression.body.body);
-                    //TODO: Verify that this is a return statement
-                    var directiveReturnStatement = directiveFunctionExpression.body.body[directiveFunctionExpression.body.body.length - 1];
-                    //console.log(directiveReturnStatement.argument);
-                    var properties = [];
+                    if (directiveFunctionExpression &&
+                        directiveFunctionExpression.body &&
+                        directiveFunctionExpression.body.body &&
+                        directiveFunctionExpression.body.body.length > 0) {
+                        //TODO: Verify that this is a return statement
+                        directiveReturnStatement = directiveFunctionExpression.body.body[directiveFunctionExpression.body.body.length - 1];
+                    }
                     if (directiveReturnStatement) {
-                        var directiveProperties = directiveReturnStatement.argument.properties;
+                        var properties = [];
+                        var directiveProperties;
+                        var returnObj = directiveReturnStatement.argument;
+                        if (returnObj && returnObj.properties) {
+                            directiveProperties = returnObj.properties;
+                        } else {
+                            errors.push("Directive does not return an object");
+                            //TODO
+                            directiveProperties = [];
+                        }
                         var directivePropertyKeys = {};
                         var whitelist = ["scope"];
                         directiveProperties.forEach(function (prop) {
@@ -31,13 +41,13 @@ module.exports.convertString = function (code) {
                             }
                         });
                         if (errors.length === 0) {
-                        path.value.callee.property.name = "component";
+                            path.value.callee.property.name = "component";
                             if (directivePropertyKeys.hasOwnProperty("scope")) {
                                 properties.push(b.property("init", b.identifier("bindings"), b.objectExpression([])));
                             }
                         }
+                        path.value.arguments[1] = b.objectExpression(properties);
                     }
-                    path.value.arguments[1] = b.objectExpression(properties);
                 }
                 this.traverse(path);
             }

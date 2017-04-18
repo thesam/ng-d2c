@@ -26,6 +26,27 @@ describe("ng-d2c", function () {
             '});');
         assert.equal(result.code, undefined);
         assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Property cannot be converted safely: compile");
+    });
+
+    it("should return error for directive that does not return object", () => {
+        let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+            'return "";' +
+            '});');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], "Directive does not return an object");
+    });
+
+    it("TODO: should copy supported properties to component object", () => {
+        // let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
+        //     'return {' +
+        //     'compile: {}' +
+        //     '};' +
+        //     '});');
+        // assert.equal(result.code, undefined);
+        // assert.equal(result.errors.length, 1);
+        // assert.equal(result.errors[0], "Property cannot be converted safely: compile");
     });
 
     //TODO: Convert file
