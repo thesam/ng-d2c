@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/thesam/ng-d2c#readme",
   "dependencies": {
-    "recast": "^0.10.32"
+    "recast": "^0.12.3"
   },
   "devDependencies": {
     "mocha": "^2.3.2",

@@ -1,4 +1,4 @@
-var d2c = require("../index.js");
+var d2c = require("../lib/lib.js");
 var assert = require("assert");
 var EOL = require('os').EOL;
 
@@ -150,6 +150,11 @@ describe("ng-d2c", function () {
         assert.equal(directiveFile.result.errors[0], "Directive does not return an object");
     });
 
+    it("can analyze file without directive", () => {
+        var directiveFiles = d2c.analyzeFiles("test/fixtures/simpleComponent.js");
+        assert.equal(directiveFiles.length, 0);
+    });
+
     it("can convert directive in file", () => {
         var fs = require("fs");
         var content = fs.readFileSync("test/fixtures/simpleDirective.js", "utf8");
@@ -165,8 +170,7 @@ describe("ng-d2c", function () {
 
     });
 
-    //TODO: Convert file
     //TODO: Scan files, list directives that can be converted and those with errors
-    //TODO: Error if multiple directives in same file
+    //TODO: multiple directives in same file
     //TODO: directive function without return
 });
