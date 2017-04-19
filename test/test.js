@@ -1,6 +1,7 @@
 var d2c = require("../lib/lib.js");
 var assert = require("assert");
 var EOL = require('os').EOL;
+var fs = require("fs");
 
 describe("ng-d2c", function () {
     it("should not touch existing component", () => {
@@ -156,11 +157,7 @@ describe("ng-d2c", function () {
     });
 
     it("can convert directive in file", () => {
-        var fs = require("fs");
-        var content = fs.readFileSync("test/fixtures/simpleDirective.js", "utf8");
-        var tmp = require('tmp');
-        var tmpobj = tmp.fileSync();
-        fs.writeFileSync(tmpobj.name, content);
+        var tmpobj = createTempCopy("test/fixtures/simpleDirective.js");
         var directiveFiles = d2c.convertFiles([tmpobj.name]);
         var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedComponentContent = fs.readFileSync("test/fixtures/simpleComponent.js", "utf8");
@@ -170,7 +167,22 @@ describe("ng-d2c", function () {
 
     });
 
-    //TODO: Scan files, list directives that can be converted and those with errors
-    //TODO: multiple directives in same file
+    it("can convert multiple directives in one file", () => {
+        var tmpobj = createTempCopy("test/fixtures/multiDirective.js");
+        d2c.convertFiles([tmpobj.name]);
+        var newContent = fs.readFileSync(tmpobj.name, "utf8");
+        var expectedContent = fs.readFileSync("test/fixtures/multiComponent.js", "utf8");
+        assert.equal(newContent,expectedContent);
+    });
+
+    function createTempCopy(path) {
+        var content = fs.readFileSync(path, "utf8");
+        var tmp = require('tmp');
+        var tmpobj = tmp.fileSync();
+        fs.writeFileSync(tmpobj.name, content);
+        return tmpobj;
+    }
+
+    //TODO: multiple directives in same file, detect when analyzing, print all directive names + errors
     //TODO: directive function without return
 });
