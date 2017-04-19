@@ -25,3 +25,10 @@ bad.forEach(function (file) {
 });
 console.log("OK: "+good.length+" (Can be converted)");
 console.log("FAIL: " + bad.length + " (Can not be converted until errors are fixed)");
+if (args[0] === "convert") {
+    good.forEach(function(fileToConvert) {
+        var filename = fileToConvert.file;
+        console.log("Converting: " + filename);
+        d2c.convertFiles([filename]);
+    });
+}
