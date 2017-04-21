@@ -24,6 +24,10 @@
     "tmp": "0.0.31"
   },
   "bin": {
-    "ng-d2c": "index.js"
-  }
+    "ng-d2c": "bin/ng-d2c.js"
+  },
+  "files": [
+    "bin",
+    "lib"
+  ]
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var d2c = require("./lib/lib.js");
+var d2c = require("../lib/lib.js");
 
 var args = process.argv.slice(2);
 
