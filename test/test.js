@@ -5,7 +5,9 @@ var fs = require("fs");
 
 describe("ng-d2c", function () {
     it("should not touch existing component", () => {
-        assert.equal(d2c.convertString('angular.module("foo").component("bar",{})').code, 'angular.module("foo").component("bar",{})');
+        var result = d2c.convertString('angular.module("foo").component("bar",{})');
+        assert.equal(result.code, undefined);
+        assert.equal(result.errors.length, 0);
     });
 
     it("should return error for directive without bindToController", () => {
@@ -136,7 +138,7 @@ describe("ng-d2c", function () {
     it("can analyze without converting", () => {
         var code = 'angular.module("a").directive("b", function() { return ""; })';
         var result = d2c.analyzeString(code);
-        assert.equal(result.code, code);
+        assert.equal(result.code, undefined);
         assert.equal(result.errors.length, 1);
     });
 
@@ -158,11 +160,9 @@ describe("ng-d2c", function () {
 
     it("can convert simple directive in file", () => {
         var tmpobj = createTempCopy("test/fixtures/simpleDirective.js");
-        var directiveFiles = d2c.convertFiles([tmpobj.name]);
+        d2c.convertFiles([tmpobj.name]);
         var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedComponentContent = fs.readFileSync("test/fixtures/simpleComponent.js", "utf8");
-        assert.equal(directiveFiles.length, 1);
-        assert.equal(directiveFiles[0].result.errors.length, 0);
         assert.equal(newComponentContent, expectedComponentContent);
     });
 
@@ -176,11 +176,9 @@ describe("ng-d2c", function () {
 
     it("can convert advanced directive in file", () => {
         var tmpobj = createTempCopy("test/fixtures/advancedDirective.js");
-        var directiveFiles = d2c.convertFiles([tmpobj.name]);
+        d2c.convertFiles([tmpobj.name]);
         var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedComponentContent = fs.readFileSync("test/fixtures/advancedComponent.js", "utf8");
-        assert.equal(directiveFiles.length, 1);
-        assert.equal(directiveFiles[0].result.errors.length, 0);
         assert.equal(newComponentContent, expectedComponentContent);
     });
 

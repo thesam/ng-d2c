@@ -1,5 +1,7 @@
 # ng-d2c
-Converts AngularJS directives to components. Tries to avoid converting directives that can not be converted safety.
+Converts AngularJS directives to components. Tries to avoid converting directives that can not be converted safety. 
+
+Directives are overwritten in-place.
 
 ### Before
 ```
@@ -19,11 +21,25 @@ angular.module("foo").component("simple", {
 ```
 
 ## Usage
-WARNING: Always use version control software and review the changes made by this tool before committing your new components!
-
+### 1. Analyze
 ```
 # Find and analyze directives in .js files in the current directory and subdirectories
-ng-d2c
+$ ng-d2c
+OK: advancedDirective.js
+OK: multiDirective.js
+OK: simpleDirective.js
+FAIL: invalidDirective.js
+        Directive does not return an object
+OK: 3 (Can be converted)
+FAIL: 1 (Can not be converted until errors are fixed)
+```
+### 2. Convert
+WARNING: Always use version control software and review the changes made by this tool before committing your new components!
+```
 # Convert all directives which can be converted safely in the current directory and subdirectories
-ng-d2c convert
+$ ng-d2c convert
+Converting: advancedDirective.js
+Converting: multiDirective.js
+Converting: simpleDirective.js
+
 ```
