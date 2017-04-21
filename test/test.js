@@ -156,7 +156,7 @@ describe("ng-d2c", function () {
         assert.equal(directiveFiles.length, 0);
     });
 
-    it("can convert directive in file", () => {
+    it("can convert simple directive in file", () => {
         var tmpobj = createTempCopy("test/fixtures/simpleDirective.js");
         var directiveFiles = d2c.convertFiles([tmpobj.name]);
         var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
@@ -164,7 +164,6 @@ describe("ng-d2c", function () {
         assert.equal(directiveFiles.length, 1);
         assert.equal(directiveFiles[0].result.errors.length, 0);
         assert.equal(newComponentContent, expectedComponentContent);
-
     });
 
     it("can convert multiple directives in one file", () => {
@@ -173,6 +172,16 @@ describe("ng-d2c", function () {
         var newContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedContent = fs.readFileSync("test/fixtures/multiComponent.js", "utf8");
         assert.equal(newContent,expectedContent);
+    });
+
+    it("can convert advanced directive in file", () => {
+        var tmpobj = createTempCopy("test/fixtures/advancedDirective.js");
+        var directiveFiles = d2c.convertFiles([tmpobj.name]);
+        var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
+        var expectedComponentContent = fs.readFileSync("test/fixtures/advancedComponent.js", "utf8");
+        assert.equal(directiveFiles.length, 1);
+        assert.equal(directiveFiles[0].result.errors.length, 0);
+        assert.equal(newComponentContent, expectedComponentContent);
     });
 
     function createTempCopy(path) {
