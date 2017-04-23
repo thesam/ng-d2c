@@ -6,7 +6,7 @@ var fs = require("fs");
 describe("ng-d2c", function () {
     it("should not touch existing component", () => {
         var result = d2c.convertString('angular.module("foo").component("bar",{})');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 0);
     });
 
@@ -14,7 +14,7 @@ describe("ng-d2c", function () {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {restrict: "E", scope: {}};' +
             '});');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Directive does not use bindToController");
     });
@@ -23,7 +23,7 @@ describe("ng-d2c", function () {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {restrict: "E", bindToController: {}};' +
             '});');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Directive does not use isolate scope");
     });
@@ -32,7 +32,7 @@ describe("ng-d2c", function () {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {restrict: "E", bindToController: {}, scope: false};' +
             '});');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Directive does not use isolate scope");
     });
@@ -45,7 +45,7 @@ describe("ng-d2c", function () {
             'scope: { hello: "="},' +
             'bindToController: true' +
             '};' +
-            '});').code, 'angular.module("foo").component("bar",{' + EOL + '  bindings: { hello: "="}' + EOL + '});');
+            '});').generatedJs, 'angular.module("foo").component("bar",{' + EOL + '  bindings: { hello: "="}' + EOL + '});');
     });
 
     it("should convert bindToController object to bindings if bindToController is object", () => {
@@ -55,7 +55,7 @@ describe("ng-d2c", function () {
             'scope: { hello: "="},' +
             'bindToController: { goodbye: "="}' +
             '};' +
-            '});').code, 'angular.module("foo").component("bar",{' + EOL + '  bindings: { goodbye: "="}' + EOL + '});');
+            '});').generatedJs, 'angular.module("foo").component("bar",{' + EOL + '  bindings: { goodbye: "="}' + EOL + '});');
     });
 
     it("should return error for directive with unsupported property", () => {
@@ -73,7 +73,7 @@ describe("ng-d2c", function () {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return "";' +
             '});');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Directive does not return an object");
     });
@@ -96,7 +96,7 @@ describe("ng-d2c", function () {
             'restrict: "E",' +
             '};' +
             '});');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Property cannot be converted safely: " + propertyName);
     }
@@ -110,7 +110,7 @@ describe("ng-d2c", function () {
             'restrict: "E",' +
             '};' +
             '});');
-        assert.equal(result.code, 'angular.module("foo").component("bar",{' + EOL +
+        assert.equal(result.generatedJs, 'angular.module("foo").component("bar",{' + EOL +
             '  ' + 'bindings' + ': {},' + EOL +
             '  ' + propertyName + ': "TEST"' + EOL +
             '});');
@@ -121,7 +121,7 @@ describe("ng-d2c", function () {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {scope: {}, bindToController: {}};' +
             '});');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Directive is not restricted to element (E)");
     });
@@ -130,7 +130,7 @@ describe("ng-d2c", function () {
         let result = d2c.convertString('angular.module("foo").directive("bar",function () {' +
             'return {restrict: "A", scope: {}, bindToController: {}};' +
             '});');
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
         assert.equal(result.errors[0], "Directive is not restricted to element (E)");
     });
@@ -138,7 +138,7 @@ describe("ng-d2c", function () {
     it("can analyze without converting", () => {
         var code = 'angular.module("a").directive("b", function() { return ""; })';
         var result = d2c.analyzeString(code);
-        assert.equal(result.code, undefined);
+        assert.equal(result.generatedJs, undefined);
         assert.equal(result.errors.length, 1);
     });
 
