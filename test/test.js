@@ -143,24 +143,24 @@ describe("ng-d2c", function () {
     });
 
     it("can analyze directive in file", () => {
-        var directiveFiles = d2c.analyzeFiles("test/fixtures/invalid*.js");
+        var directiveFiles = d2c.analyzeDirectiveFiles("test/fixtures/invalid*.js");
         assert.equal(directiveFiles.length, 1);
         var directiveFile = directiveFiles[0];
         //TODO: directive name
         // assert.equal(directiveFile.name, "simple");
-        assert.equal(directiveFile.file, "test/fixtures/invalidDirective.js");
-        assert.equal(directiveFile.result.errors.length, 1);
-        assert.equal(directiveFile.result.errors[0], "Directive does not return an object");
+        assert.equal(directiveFile.path, "test/fixtures/invalidDirective.js");
+        assert.equal(directiveFile.errors.length, 1);
+        assert.equal(directiveFile.errors[0], "Directive does not return an object");
     });
 
     it("can analyze file without directive", () => {
-        var directiveFiles = d2c.analyzeFiles("test/fixtures/simpleComponent.js");
+        var directiveFiles = d2c.analyzeDirectiveFiles("test/fixtures/simpleComponent.js");
         assert.equal(directiveFiles.length, 0);
     });
 
     it("can convert simple directive in file", () => {
         var tmpobj = createTempCopy("test/fixtures/simpleDirective.js");
-        d2c.convertFiles([tmpobj.name]);
+        d2c.convertFile(tmpobj.name);
         var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedComponentContent = fs.readFileSync("test/fixtures/simpleComponent.js", "utf8");
         assert.equal(newComponentContent, expectedComponentContent);
@@ -168,7 +168,7 @@ describe("ng-d2c", function () {
 
     it("can convert multiple directives in one file", () => {
         var tmpobj = createTempCopy("test/fixtures/multiDirective.js");
-        d2c.convertFiles([tmpobj.name]);
+        d2c.convertFile(tmpobj.name);
         var newContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedContent = fs.readFileSync("test/fixtures/multiComponent.js", "utf8");
         assert.equal(newContent,expectedContent);
@@ -176,7 +176,7 @@ describe("ng-d2c", function () {
 
     it("can convert advanced directive in file", () => {
         var tmpobj = createTempCopy("test/fixtures/advancedDirective.js");
-        d2c.convertFiles([tmpobj.name]);
+        d2c.convertFile(tmpobj.name);
         var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedComponentContent = fs.readFileSync("test/fixtures/advancedComponent.js", "utf8");
         assert.equal(newComponentContent, expectedComponentContent);

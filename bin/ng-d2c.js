@@ -4,11 +4,11 @@ var d2c = require("../lib/lib.js");
 
 var args = process.argv.slice(2);
 
-var analyzedFiles = d2c.analyzeFiles("**/*.js");
+var directiveFiles = d2c.analyzeDirectiveFiles("**/*.js");
 var good = [];
 var bad = [];
-analyzedFiles.forEach(function (file) {
-    if (file.result.errors.length > 0) {
+directiveFiles.forEach(function (file) {
+    if (file.errors.length > 0) {
         bad.push(file);
     } else {
         good.push(file);
@@ -16,17 +16,17 @@ analyzedFiles.forEach(function (file) {
 });
 if (args[0] === "convert") {
     good.forEach(function(fileToConvert) {
-        var filename = fileToConvert.file;
+        var filename = fileToConvert.path;
         console.log("Converting: " + filename);
-        d2c.convertFiles([filename]);
+        d2c.convertFile(filename);
     });
 } else {
     good.forEach(function (file) {
-        console.log("OK: " + file.file);
+        console.log("OK: " + file.path);
     });
     bad.forEach(function (file) {
-        console.log("FAIL: " + file.file);
-        file.result.errors.forEach(function (err) {
+        console.log("FAIL: " + file.path);
+        file.errors.forEach(function (err) {
             console.log("\t" + err);
         });
     });

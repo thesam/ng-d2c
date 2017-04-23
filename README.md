@@ -1,7 +1,7 @@
-# ng-d2c
+# ng-d2c (Angular directive to component)
 Converts AngularJS directives to components. Tries to avoid converting directives that can not be converted safety. 
 
-Directives are overwritten in-place.
+Directives are overwritten in-place. The purpose of this tool is to perform a one-time migration to the new component syntax.
 
 ### Before
 ```
