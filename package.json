@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "mocha": "^3.3.0",
-    "tmp": "0.0.31"
+    "tmp": "^0.0.31"
   },
   "bin": {
     "ng-d2c": "bin/ng-d2c.js"
