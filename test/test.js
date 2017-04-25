@@ -194,5 +194,6 @@ describe("ng-d2c", function () {
     //TODO: directive function without return
     //TODO: "Property cannot be converted safely: undefined"
     //TODO: Stop if directive function has parameters
+    //TODO: Can convert properties with String names ('scope' instead of scope for example)
 
 });
