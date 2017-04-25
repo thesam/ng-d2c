@@ -193,5 +193,6 @@ describe("ng-d2c", function () {
     //TODO: multiple directives in same file, detect when analyzing, print all directive names + errors
     //TODO: directive function without return
     //TODO: "Property cannot be converted safely: undefined"
+    //TODO: Stop if directive function has parameters
 
 });
