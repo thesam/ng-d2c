@@ -112,7 +112,7 @@ describe("ng-d2c", function () {
             '});');
         assert.equal(result.generatedJs, 'angular.module("foo").component("bar",{' + EOL +
             '  ' + 'bindings' + ': {},' + EOL +
-            '  ' + propertyName + ': "TEST"' + EOL +
+            '  ' + removeQuotes(propertyName) + ': "TEST"' + EOL +
             '});');
         assert.equal(result.errors.length, 0);
     }
@@ -182,12 +182,21 @@ describe("ng-d2c", function () {
         assert.equal(newComponentContent, expectedComponentContent);
     });
 
+    it("can parse properties with string literal identifiers", () => {
+        testSupportedProperty("'controller'");
+        testSupportedProperty('"controller"');
+    });
+
     function createTempCopy(path) {
         var content = fs.readFileSync(path, "utf8");
         var tmp = require('tmp');
         var tmpobj = tmp.fileSync();
         fs.writeFileSync(tmpobj.name, content);
         return tmpobj;
+    }
+
+    function removeQuotes(str) {
+        return str.replace(/'/g,'').replace(/"/g,"");
     }
 
     //TODO: multiple directives in same file, detect when analyzing, print all directive names + errors
