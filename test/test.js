@@ -171,7 +171,7 @@ describe("ng-d2c", function () {
         d2c.convertFile(tmpobj.name);
         var newContent = fs.readFileSync(tmpobj.name, "utf8");
         var expectedContent = fs.readFileSync("test/fixtures/multiComponent.js", "utf8");
-        assert.equal(newContent,expectedContent);
+        assert.equal(newContent, expectedContent);
     });
 
     it("can convert advanced directive in file", () => {
@@ -187,6 +187,12 @@ describe("ng-d2c", function () {
         testSupportedProperty('"controller"');
     });
 
+    it("should return error if directive function injects parameters", () => {
+        let result = d2c.analyzeString('angular.module("foo").directive("bar",function yo(someService) {});');
+        assert.equal(result.errors.length, 1);
+        assert.equal(result.errors[0], ["Directive function has injected parameters (Move them to the controller)"]);
+    });
+
     function createTempCopy(path) {
         var content = fs.readFileSync(path, "utf8");
         var tmp = require('tmp');
@@ -196,13 +202,10 @@ describe("ng-d2c", function () {
     }
 
     function removeQuotes(str) {
-        return str.replace(/'/g,'').replace(/"/g,"");
+        return str.replace(/'/g, '').replace(/"/g, "");
     }
 
     //TODO: multiple directives in same file, detect when analyzing, print all directive names + errors
     //TODO: directive function without return
-    //TODO: "Property cannot be converted safely: undefined"
     //TODO: Stop if directive function has parameters
-    //TODO: Can convert properties with String names ('scope' instead of scope for example)
-
 });
