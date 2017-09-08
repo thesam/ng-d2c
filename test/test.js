@@ -175,11 +175,7 @@ describe("ng-d2c", function () {
     });
 
     it("can convert advanced directive in file", () => {
-        var tmpobj = createTempCopy("test/fixtures/advancedDirective.js");
-        d2c.convertFile(tmpobj.name);
-        var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
-        var expectedComponentContent = fs.readFileSync("test/fixtures/advancedComponent.js", "utf8");
-        assert.equal(newComponentContent, expectedComponentContent);
+        assertFixture("advanced");
     });
 
     it("can parse properties with string literal identifiers", () => {
@@ -193,6 +189,10 @@ describe("ng-d2c", function () {
         assert.equal(result.errors[0], ["Directive function has injected parameters (Move them to the controller)"]);
     });
 
+    it("should copy empty controller", () => {
+        assertFixture("emptyController");
+    });
+
     function createTempCopy(path) {
         var content = fs.readFileSync(path, "utf8");
         var tmp = require('tmp');
@@ -203,6 +203,14 @@ describe("ng-d2c", function () {
 
     function removeQuotes(str) {
         return str.replace(/'/g, '').replace(/"/g, "");
+    }
+
+    function assertFixture(name) {
+      var tmpobj = createTempCopy("test/fixtures/" + name + "Directive.js");
+      d2c.convertFile(tmpobj.name);
+      var newComponentContent = fs.readFileSync(tmpobj.name, "utf8");
+      var expectedComponentContent = fs.readFileSync("test/fixtures/" + name + "Component.js", "utf8");
+      assert.equal(newComponentContent, expectedComponentContent);
     }
 
     //TODO: multiple directives in same file, detect when analyzing, print all directive names + errors
