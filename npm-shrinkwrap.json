@@ -1,6 +1,6 @@
 {
   "name": "ng-d2c",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "dependencies": {
     "ast-types": {
       "version": "0.9.11",
