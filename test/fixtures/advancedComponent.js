@@ -10,6 +10,8 @@ angular.module("foo").component("advanced", {
     require: "^parent",
 
     controller: function(someService) {
-        console.log("Hello");
+        this.$onInit = function() {
+            console.log("Hello");
+        };
     }
 });

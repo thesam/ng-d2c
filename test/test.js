@@ -193,6 +193,10 @@ describe("ng-d2c", function () {
         assertFixture("emptyController");
     });
 
+    it("should wrap non-empty controller with $onInit", () => {
+        assertFixture("nonEmptyController");
+    });
+
     function createTempCopy(path) {
         var content = fs.readFileSync(path, "utf8");
         var tmp = require('tmp');
@@ -216,4 +220,5 @@ describe("ng-d2c", function () {
     //TODO: multiple directives in same file, detect when analyzing, print all directive names + errors
     //TODO: directive function without return
     //TODO: Stop if directive function has parameters
+    //TODO: Should require inline controller
 });
