@@ -4,7 +4,15 @@ var d2c = require("../lib/lib.js");
 
 var args = process.argv.slice(2);
 
-var directiveFiles = d2c.analyzeDirectiveFiles("**/*.js");
+var filesToScan;
+if (args[0] === "convert") {
+    filesToScan = args[1];
+} else {
+    filesToScan = args[0];
+}
+filesToScan = filesToScan || "**/*.js";
+
+var directiveFiles = d2c.analyzeDirectiveFiles(filesToScan);
 var good = [];
 var bad = [];
 directiveFiles.forEach(function (file) {
